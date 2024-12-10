@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur et Lecteur de QR Code</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            width: 100%;
+            background-color: #28a745;
+            text-align: center;
+            padding: 20px;
+        }
+
+        header h1 {
+            color: #fff;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="color"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .qr-code-container {
+            display: none;
+            text-align: center;
+        }
+
+        #qr-code {
+            margin: 20px auto;
+        }
+
+        .history {
+            margin-top: 20px;
+        }
+
+        .history-item {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .scanner {
+            margin-top: 20px;
+        }
+
+        video {
+            width: 100%;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Générateur et Lecteur de QR Code</h1>
+    </header>
+
+    <main class="container">
+        <h2>Créer un QR Code</h2>
+        <div class="form-group">
+            <label for="text-input">Texte ou URL :</label>
+            <input type="text" id="text-input" placeholder="Entrez un texte ou une URL">
+        </div>
+        <div class="form-group">
+            <label for="qr-color">Couleur du QR Code :</label>
+            <input type="color" id="qr-color" value="#000000">
+        </div>
+        <div class="form-group">
+            <label for="qr-bg-color">Couleur de fond :</label>
+            <input type="color" id="qr-bg-color" value="#ffffff">
+        </div>
+        <div class="form-group">
+            <label for="qr-size">Taille :</label>
+            <select id="qr-size">
+                <option value="128">Petit (128x128)</option>
+                <option value="256" selected>Moyen (256x256)</option>
+                <option value="512">Grand (512x512)</option>
+            </select>
+        </div>
+        <button id="generate-btn">Générer QR Code</button>
+
+        <div class="qr-code-container" id="qr-code-container">
+            <h3>Votre QR Code :</h3>
+            <div id="qr-code"></div>
+            <button id="download-btn">Télécharger QR Code</button>
+        </div>
+
+        <h2>Historique des QR Codes</h2>
+        <div class="history" id="history"></div>
+
+        <h2>Scanner un QR Code</h2>
+        <div class="scanner">
+            <video id="scanner-video" autoplay></video>
+            <p id="scanner-result">Résultat : Aucun QR Code détecté</p>
+        </div>
+    </main>
+
+    <footer>
+        <p>Créé avec ❤️ par votre équipe</p>
+    </footer>
+
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <script>
+        // Génération de QR Code
+        const generateBtn = document.getElementById('generate-btn');
+        const qrCodeContainer = document.getElementById('qr-code-container');
+        const qrCodeElement = document.getElementById('qr-code');
+        const downloadBtn = document.getElementById('download-btn');
+        const historyContainer = document.getElementById('history');
+
+        generateBtn.addEventListener('click', () => {
+            const text = document.getElementById('text-input').value;
+            const color = document.getElementById('qr-color').value;
+            const bgColor = document.getElementById('qr-bg-color').value;
+            const size = parseInt(document.getElementById('qr-size').value);
+
+            if (text.trim() === '') {
+                alert('Veuillez entrer un texte ou une URL');
+                return;
+            }
+
+            // Efface l'ancien QR Code
+            qrCodeElement.innerHTML = '';
+
+            // Crée le QR Code
+            const qrCode = new QRCode(qrCodeElement, {
+                text: text,
+                width: size,
+                height: size,
+                colorDark: color,
+                colorLight: bgColor
+            });
+
+            // Affiche le conteneur
+            qrCodeContainer.style.display = 'block';
+
+            // Ajoute à l'historique
+            const qrData = { text, color, bgColor, size };
+            saveToHistory(qrData);
+        });
+
+        downloadBtn.addEventListener('click', () => {
+            const canvas = qrCodeElement.querySelector('canvas');
+            if (canvas) {
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL();
+                link.download = 'qr-code.png';
+                link.click();
+            }
+        });
+
+        // Historique
+        function saveToHistory(data) {
+            const history = JSON.parse(localStorage.getItem('qrHistory') || '[]');
+            history.push(data);
+            localStorage.setItem('qrHistory', JSON.stringify(history));
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const history = JSON.parse(localStorage.getItem('qrHistory') || '[]');
+            historyContainer.innerHTML = '';
+            history.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.innerHTML = `
+                    <span>${item.text}</span>
+                    <button onclick="deleteHistory(${index})">Supprimer</button>
+                `;
+                historyContainer.appendChild(div);
+            });
+        }
+
+        function deleteHistory(index) {
+            const history = JSON.parse(localStorage.getItem('qrHistory') || '[]');
+            history.splice(index, 1);
+            localStorage.setItem('qrHistory', JSON.stringify(history));
+            renderHistory();
+        }
+
+        renderHistory();
+
+        // Scanner un QR Code
+        const video = document.getElementById('scanner-video');
+        const result = document.getElementById('scanner-result');
+        const scanner = new Html5Qrcode('scanner-video');
+
+        scanner.start({ facingMode: "environment" }, {}, qrCodeMessage => {
+            result.textContent = `Résultat : ${qrCodeMessage}`;
+            scanner.stop();
+        });
+    </script>
+</body>
+
+</html>
