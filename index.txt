@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Générateur et Lecteur de QR Code</title>
     <style>
+        /* === Styles généraux === */
         * {
             margin: 0;
             padding: 0;
@@ -115,6 +116,7 @@
     </header>
 
     <main class="container">
+        <!-- === SECTION GÉNÉRATION DE QR CODE === -->
         <h2>Créer un QR Code</h2>
         <div class="form-group">
             <label for="text-input">Texte ou URL :</label>
@@ -138,15 +140,20 @@
         </div>
         <button id="generate-btn">Générer QR Code</button>
 
+        <!-- === CONTENEUR QR CODE GÉNÉRÉ === -->
         <div class="qr-code-container" id="qr-code-container">
             <h3>Votre QR Code :</h3>
             <div id="qr-code"></div>
             <button id="download-btn">Télécharger QR Code</button>
         </div>
 
+        <!-- === HISTORIQUE DES QR CODES === -->
         <h2>Historique des QR Codes</h2>
-        <div class="history" id="history"></div>
+        <div class="history" id="history">
+            <!-- Les QR Codes générés seront affichés ici -->
+        </div>
 
+        <!-- === SECTION SCANNER DE QR CODE === -->
         <h2>Scanner un QR Code</h2>
         <div class="scanner">
             <video id="scanner-video" autoplay></video>
@@ -158,10 +165,12 @@
         <p>Créé avec ❤️ par votre équipe</p>
     </footer>
 
+    <!-- === Bibliothèques externes === -->
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+
     <script>
-        // Génération de QR Code
+        /* === SECTION GÉNÉRATION DE QR CODE === */
         const generateBtn = document.getElementById('generate-btn');
         const qrCodeContainer = document.getElementById('qr-code-container');
         const qrCodeElement = document.getElementById('qr-code');
@@ -209,7 +218,7 @@
             }
         });
 
-        // Historique
+        /* === SECTION HISTORIQUE DES QR CODES === */
         function saveToHistory(data) {
             const history = JSON.parse(localStorage.getItem('qrHistory') || '[]');
             history.push(data);
@@ -240,7 +249,7 @@
 
         renderHistory();
 
-        // Scanner un QR Code
+        /* === SECTION SCANNER DE QR CODE === */
         const video = document.getElementById('scanner-video');
         const result = document.getElementById('scanner-result');
         const scanner = new Html5Qrcode('scanner-video');
