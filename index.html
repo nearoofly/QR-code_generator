@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de QR Code</title>
+
+    <!-- Intégration du CSS dans le même fichier -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+
+        header {
+            width: 100%;
+            background-color: #28a745;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .logo-container img {
+            width: 120px;
+            height: auto;
+            margin: 0 auto;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            flex-grow: 1;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .description {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .qr-code-form {
+            margin-bottom: 20px;
+        }
+
+        #text-input {
+            width: 80%;
+            padding: 10px;
+            font-size: 1rem;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        #generate-btn {
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #generate-btn:hover {
+            background-color: #218838;
+        }
+
+        .qr-code-container {
+            display: none;
+            margin-top: 20px;
+        }
+
+        #qr-code {
+            margin-top: 20px;
+        }
+
+        .download-btn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 40px; /* Augmenté l'espace entre le QR Code et le bouton */
+        }
+
+        .download-btn:hover {
+            background-color: #0056b3;
+        }
+
+        footer {
+            width: 100%;
+            background-color: #28a745;
+            text-align: center;
+            padding: 15px 0;
+            position: relative;
+            bottom: 0;
+        }
+
+        footer p {
+            color: white;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Générateur de QR Code</h1>
+    </header>
+
+    <main class="container">
+        <h1>Créez votre QR Code facilement</h1>
+        <p class="description">Entrez du texte ou une URL pour générer votre QR Code.</p>
+
+        <div class="qr-code-form">
+            <label for="text-input">Entrez un texte ou une URL :</label>
+            <input type="text" id="text-input" placeholder="Exemple : https://www.exemple.com">
+            <button id="generate-btn">Générer QR Code</button>
+        </div>
+
+        <div id="qr-code-container" class="qr-code-container">
+            <h3>Votre QR Code :</h3>
+            <div id="qr-code"></div>
+            <button id="download-btn" class="download-btn">Télécharger le QR Code</button>
+        </div>
+    </main>
+
+    <footer>
+        <p>Créé avec ❤️ par votre équipe</p>
+    </footer>
+
+    <!-- Inclusion de la bibliothèque QRCode.js depuis un CDN -->
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+
+    <script>
+        // Fonction pour générer le QR Code
+        document.getElementById('generate-btn').addEventListener('click', function () {
+            const text = document.getElementById('text-input').value;
+
+            if (text) {
+                // Nettoyer le conteneur de QR Code avant de le recréer
+                const qrCodeContainer = document.getElementById('qr-code');
+                qrCodeContainer.innerHTML = '';
+
+                // Créer le QR Code avec la bibliothèque qrcode.min.js
+                const qrCode = new QRCode(qrCodeContainer, {
+                    text: text,
+                    width: 128,
+                    height: 128,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+
+                // Afficher la zone de QR code généré
+                document.getElementById('qr-code-container').style.display = 'block';
+            } else {
+                alert("Veuillez entrer un texte ou une URL !");
+            }
+        });
+
+        // Fonction pour télécharger le QR Code
+        document.getElementById('download-btn').addEventListener('click', function () {
+            const qrCodeCanvas = document.querySelector('#qr-code canvas');
+            if (qrCodeCanvas) {
+                const link = document.createElement('a');
+                link.href = qrCodeCanvas.toDataURL();
+                link.download = 'qr-code.png';
+                link.click();
+            }
+        });
+    </script>
+
+</body>
+
+</html>
