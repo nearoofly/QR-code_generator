@@ -24,3 +24,6 @@ Pour exécuter ce projet sur votre ordinateur local :
 1. Clonez ce dépôt :
    ```bash
    git clone https://github.com/nearoofly/QR-code_generator.git
+## Make a Donate !
+[![Donate with PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)]
+   
